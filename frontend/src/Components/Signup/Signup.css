@@ -1,13 +1,13 @@
-/* Professional Login Page Styles */
-.login-page {
+/* Professional Signup Page Styles */
+.signup-page {
   min-height: 100vh;
-  background: linear-gradient(135deg, var(--primary-50) 0%, white 50%, var(--gray-50) 100%);
+  background: linear-gradient(135deg, var(--success-50) 0%, white 50%, var(--primary-50) 100%);
   display: flex;
   align-items: center;
   padding: var(--spacing-lg) 0;
 }
 
-.login-container {
+.signup-container {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: var(--spacing-3xl);
@@ -16,7 +16,7 @@
   margin: 0 auto;
 }
 
-.login-card {
+.signup-card {
   background-color: white;
   border-radius: var(--radius-xl);
   padding: var(--spacing-3xl);
@@ -27,112 +27,126 @@
   margin: 0 auto;
 }
 
-.login-header {
+.signup-header {
   text-align: center;
   margin-bottom: var(--spacing-2xl);
 }
 
-.login-icon {
+.signup-icon {
   display: inline-flex;
   align-items: center;
   justify-content: center;
   width: 80px;
   height: 80px;
-  background: linear-gradient(135deg, var(--primary-600), var(--primary-400));
+  background: linear-gradient(135deg, var(--success-600), var(--success-400));
   color: white;
   border-radius: var(--radius-xl);
   margin-bottom: var(--spacing-lg);
 }
 
-.login-title {
+.signup-title {
   font-size: 2rem;
   font-weight: 700;
   color: var(--gray-900);
   margin-bottom: var(--spacing-sm);
 }
 
-.login-subtitle {
+.signup-subtitle {
   color: var(--gray-600);
   font-size: 1rem;
   margin: 0;
 }
 
-.login-form {
+.signup-form {
   display: flex;
   flex-direction: column;
   gap: var(--spacing-lg);
 }
 
-.form-label {
+.form-control.error {
+  border-color: var(--danger-500);
+  box-shadow: 0 0 0 3px var(--danger-100);
+}
+
+.error-message {
+  color: var(--danger-600);
+  font-size: 0.875rem;
+  margin-top: var(--spacing-xs);
   display: flex;
   align-items: center;
   gap: var(--spacing-xs);
-  font-weight: 600;
-  color: var(--gray-700);
-  margin-bottom: var(--spacing-sm);
 }
 
-.password-input-wrapper {
-  position: relative;
+.success-message {
+  color: var(--success-600);
+  font-size: 0.875rem;
+  margin-top: var(--spacing-xs);
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-xs);
 }
 
-.password-toggle {
-  position: absolute;
-  right: var(--spacing-md);
-  top: 50%;
-  transform: translateY(-50%);
-  background: none;
-  border: none;
-  color: var(--gray-400);
-  cursor: pointer;
-  padding: var(--spacing-xs);
-  border-radius: var(--radius-sm);
-  transition: color 0.2s ease;
+.password-strength {
+  margin-top: var(--spacing-sm);
 }
 
-.password-toggle:hover {
-  color: var(--gray-600);
-}
-
-.password-toggle:disabled {
-  opacity: 0.5;
-  cursor: not-allowed;
-}
-
-.w-full {
+.strength-bar {
   width: 100%;
+  height: 4px;
+  background-color: var(--gray-200);
+  border-radius: var(--radius-sm);
+  overflow: hidden;
+  margin-bottom: var(--spacing-xs);
 }
 
-.login-footer {
+.strength-fill {
+  height: 100%;
+  transition: all 0.3s ease;
+  border-radius: var(--radius-sm);
+}
+
+.strength-1 { background-color: var(--danger-500); }
+.strength-2 { background-color: var(--warning-500); }
+.strength-3 { background-color: var(--warning-400); }
+.strength-4 { background-color: var(--success-500); }
+.strength-5 { background-color: var(--success-600); }
+
+.strength-label {
+  font-size: 0.75rem;
+  color: var(--gray-600);
+  font-weight: 500;
+}
+
+.signup-footer {
   text-align: center;
   margin-top: var(--spacing-xl);
   padding-top: var(--spacing-lg);
   border-top: 1px solid var(--gray-200);
 }
 
-.login-footer p {
+.signup-footer p {
   color: var(--gray-600);
   margin: 0;
 }
 
-.login-link {
-  color: var(--primary-600);
+.signup-link {
+  color: var(--success-600);
   text-decoration: none;
   font-weight: 600;
   transition: color 0.2s ease;
 }
 
-.login-link:hover {
-  color: var(--primary-700);
+.signup-link:hover {
+  color: var(--success-700);
   text-decoration: underline;
 }
 
-/* Features Section */
-.login-features {
+/* Benefits Section */
+.signup-benefits {
   padding: var(--spacing-xl);
 }
 
-.login-features h3 {
+.signup-benefits h3 {
   font-size: 1.5rem;
   font-weight: 600;
   color: var(--gray-900);
@@ -140,13 +154,13 @@
   text-align: center;
 }
 
-.features-list {
+.benefits-list {
   display: flex;
   flex-direction: column;
   gap: var(--spacing-lg);
 }
 
-.feature-item {
+.benefit-item {
   display: flex;
   gap: var(--spacing-md);
   align-items: flex-start;
@@ -158,121 +172,99 @@
   transition: all 0.3s ease;
 }
 
-.feature-item:hover {
+.benefit-item:hover {
   transform: translateY(-2px);
   box-shadow: var(--shadow-md);
 }
 
-.feature-icon {
+.benefit-icon {
   font-size: 2rem;
   flex-shrink: 0;
 }
 
-.feature-item h4 {
+.benefit-item h4 {
   font-size: 1.125rem;
   font-weight: 600;
   color: var(--gray-900);
   margin-bottom: var(--spacing-xs);
 }
 
-.feature-item p {
+.benefit-item p {
   color: var(--gray-600);
   margin: 0;
   line-height: 1.5;
 }
 
-/* Loading State */
-.btn:disabled {
-  opacity: 0.7;
-  cursor: not-allowed;
-}
-
-.btn .spinner {
-  width: 16px;
-  height: 16px;
-  margin-right: var(--spacing-xs);
-}
-
 /* Responsive Design */
 @media (max-width: 1024px) {
-  .login-container {
+  .signup-container {
     grid-template-columns: 1fr;
     gap: var(--spacing-2xl);
     padding: 0 var(--spacing-lg);
   }
   
-  .login-features {
+  .signup-benefits {
     order: -1;
   }
   
-  .login-features h3 {
+  .signup-benefits h3 {
     font-size: 1.25rem;
   }
   
-  .features-list {
-    flex-direction: row;
-    overflow-x: auto;
+  .benefits-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
     gap: var(--spacing-md);
-    padding-bottom: var(--spacing-md);
-  }
-  
-  .feature-item {
-    min-width: 280px;
-    flex-shrink: 0;
   }
 }
 
 @media (max-width: 768px) {
-  .login-page {
+  .signup-page {
     padding: var(--spacing-md) 0;
   }
   
-  .login-card {
+  .signup-card {
     padding: var(--spacing-xl);
     margin: 0 var(--spacing-md);
   }
   
-  .login-title {
+  .signup-title {
     font-size: 1.75rem;
   }
   
-  .login-icon {
+  .signup-icon {
     width: 64px;
     height: 64px;
   }
   
-  .features-list {
-    flex-direction: column;
-  }
-  
-  .feature-item {
-    min-width: auto;
+  .benefits-list {
+    grid-template-columns: 1fr;
   }
 }
 
 @media (max-width: 640px) {
-  .login-card {
+  .signup-card {
     padding: var(--spacing-lg);
   }
   
-  .login-title {
+  .signup-title {
     font-size: 1.5rem;
   }
   
-  .login-icon {
+  .signup-icon {
     width: 56px;
     height: 56px;
   }
   
-  .feature-item {
+  .benefit-item {
     padding: var(--spacing-md);
   }
   
-  .feature-item h4 {
+  .benefit-item h4 {
     font-size: 1rem;
   }
   
-  .feature-item p {
+  .benefit-item p {
     font-size: 0.875rem;
   }
 }
@@ -289,49 +281,55 @@
   }
 }
 
-.login-card {
+.signup-card {
   animation: slideInUp 0.6s ease-out;
 }
 
-.feature-item {
+.benefit-item {
   animation: slideInUp 0.6s ease-out;
 }
 
-.feature-item:nth-child(2) {
-  animation-delay: 0.1s;
-}
-
-.feature-item:nth-child(3) {
-  animation-delay: 0.2s;
-}
+.benefit-item:nth-child(1) { animation-delay: 0s; }
+.benefit-item:nth-child(2) { animation-delay: 0.1s; }
+.benefit-item:nth-child(3) { animation-delay: 0.2s; }
+.benefit-item:nth-child(4) { animation-delay: 0.3s; }
 
 /* Focus states for accessibility */
 .form-control:focus,
 .password-toggle:focus {
-  outline: 2px solid var(--primary-500);
+  outline: 2px solid var(--success-500);
   outline-offset: 2px;
+}
+
+.form-control.error:focus {
+  outline-color: var(--danger-500);
 }
 
 /* High contrast mode support */
 @media (prefers-contrast: high) {
-  .login-card,
-  .feature-item {
+  .signup-card,
+  .benefit-item {
     border-width: 2px;
   }
   
-  .login-link:hover {
+  .signup-link:hover {
     text-decoration: underline;
     text-decoration-thickness: 2px;
+  }
+  
+  .strength-bar {
+    border: 1px solid var(--gray-400);
   }
 }
 
 /* Reduced motion support */
 @media (prefers-reduced-motion: reduce) {
-  .login-card,
-  .feature-item,
-  .feature-item:hover,
+  .signup-card,
+  .benefit-item,
+  .benefit-item:hover,
   .password-toggle,
-  .login-link {
+  .signup-link,
+  .strength-fill {
     animation: none;
     transition: none;
   }
@@ -339,11 +337,11 @@
 
 /* Print styles */
 @media print {
-  .login-page {
+  .signup-page {
     background: white;
   }
   
-  .login-card {
+  .signup-card {
     box-shadow: none;
     border: 2px solid var(--gray-300);
   }

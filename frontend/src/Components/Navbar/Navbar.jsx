@@ -1,12 +1,24 @@
 import './Navbar.css';
 import { Link, useNavigate } from 'react-router-dom';
 import { useEffect, useState } from 'react';
+import { 
+  TrendingUp, 
+  User, 
+  LogOut, 
+  Menu, 
+  X, 
+  BarChart3, 
+  Calculator, 
+  FileText, 
+  Camera,
+  Home
+} from 'lucide-react';
 
 const Navbar = () => {
   const navigate = useNavigate();
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [userEmail, setUserEmail] = useState('');
-  const [menuOpen, setMenuOpen] = useState(false); // for toggle button
+  const [menuOpen, setMenuOpen] = useState(false);
 
   useEffect(() => {
     const email = localStorage.getItem('userEmail');
@@ -18,138 +30,148 @@ const Navbar = () => {
     }
   }, []);
 
-const handleLogout = () => {
-  localStorage.removeItem('userEmail');
-  localStorage.removeItem('token');
-  setIsLoggedIn(false);
-  setUserEmail('');
-  setTimeout(() => navigate('/landing-page'), 100); // Ensures navigation after state update
-};
-
+  const handleLogout = () => {
+    localStorage.removeItem('userEmail');
+    localStorage.removeItem('token');
+    setIsLoggedIn(false);
+    setUserEmail('');
+    setMenuOpen(false);
+    setTimeout(() => navigate('/landing-page'), 100);
+  };
 
   const toggleMenu = () => {
     setMenuOpen(!menuOpen);
   };
 
+  const closeMenu = () => {
+    setMenuOpen(false);
+  };
+
   return (
-    <nav className="navbar navbar-expand-lg">
-      <div className="container-fluid" id="navbar">
-        <div>
-          <h1>Stock LLM</h1>
-        </div>
+    <nav className="navbar">
+      <div className="container">
+        <div className="navbar-content">
+          {/* Brand */}
+          <Link to="/landing-page" className="navbar-brand" onClick={closeMenu}>
+            <TrendingUp size={24} />
+            <span>StockLLM</span>
+          </Link>
 
-        {/* Toggle button for small screens */}
-        <button
-          className="navbar-toggler"
-          type="button"
-          onClick={toggleMenu}
-          aria-controls="navbarNav"
-          aria-expanded={menuOpen}
-          aria-label="Toggle navigation"
-        >
-          <span className="navbar-toggler-icon">☰</span>
-        </button>
-
-        {/* Menu items, show/hide based on menuOpen */}
-        <div
-          className={`collapse navbar-collapse ${menuOpen ? 'show' : ''}`}
-          id="navbarNav"
-        >
-          <ul className="navbar-nav ms-auto">
-            {!isLoggedIn && (
+          {/* Desktop Navigation */}
+          <div className="navbar-nav desktop-nav">
+            {!isLoggedIn ? (
               <>
-                <li className="nav-item">
-      <Link
-        className="nav-link active button"
-        to="/landing-page"
-        onClick={() => setMenuOpen(false)}
-      >
-        Dashboard
-      </Link>
-    </li>
-                <li className="nav-item">
-                  <Link className="nav-link active button" to="/login" onClick={() => setMenuOpen(false)}>
-                    Login
-                  </Link>
-                </li>
-                <li className="nav-item">
-                  <Link className="nav-link active button" to="/signup" onClick={() => setMenuOpen(false)}>
-                    Signup
-                  </Link>
-                </li>
+                <Link to="/landing-page" className="nav-link">
+                  <Home size={18} />
+                  Dashboard
+                </Link>
+                <Link to="/login" className="nav-link">
+                  <User size={18} />
+                  Login
+                </Link>
+                <Link to="/signup" className="btn btn-primary">
+                  Get Started
+                </Link>
+              </>
+            ) : (
+              <>
+                <Link to="/landing-page" className="nav-link">
+                  <Home size={18} />
+                  Dashboard
+                </Link>
+                <Link to="/detailsTable" className="nav-link">
+                  <BarChart3 size={18} />
+                  Portfolio
+                </Link>
+                <Link to="/track-trade" className="nav-link">
+                  <Camera size={18} />
+                  Track Trade
+                </Link>
+                <Link to="/calculator" className="nav-link">
+                  <Calculator size={18} />
+                  Calculator
+                </Link>
+                <Link to="/article" className="nav-link">
+                  <FileText size={18} />
+                  Articles
+                </Link>
+                
+                {/* User Menu */}
+                <div className="user-menu">
+                  <div className="user-info">
+                    <User size={18} />
+                    <span className="user-email">{userEmail}</span>
+                  </div>
+                  <button onClick={handleLogout} className="btn btn-ghost btn-sm">
+                    <LogOut size={16} />
+                    Logout
+                  </button>
+                </div>
               </>
             )}
+          </div>
 
-         {isLoggedIn && (
-  <>
-  <li className="nav-item">
-      <Link
-        className="nav-link active button"
-        to="/landing-page"
-        onClick={() => setMenuOpen(false)}
-      >
-        Dashboard
-      </Link>
-    </li>
-    <li className="nav-item">
-      <Link
-        className="nav-link active button"
-        to="/detailsTable"
-        onClick={() => setMenuOpen(false)}
-      >
-        Stocks
-      </Link>
-    </li>
-    <li className="nav-item">
-      <Link
-        className="nav-link active button"
-        to="/track-portfolio"
-      >
-        Track portfolio
-      </Link>
-    </li>
-        <li className="nav-item">
-      <Link
-        className="nav-link active button"
-        to="/track-trade"
-        onClick={() => setMenuOpen(false)}
-      >
-        Track trade
-      </Link>
-    </li>
-        <li className="nav-item">
-      <Link
-        className="nav-link active button"
-        to="/detailsTable"
-      >
-        Articles
-      </Link>
-    </li>
-        <li className="nav-item">
-      <Link
-        className="nav-link active button"
-        to="/detailsTable" 
-      >
-      Return calculator
-      </Link>
-    </li>
+          {/* Mobile Menu Toggle */}
+          <button 
+            className="mobile-menu-toggle"
+            onClick={toggleMenu}
+            aria-label="Toggle navigation"
+          >
+            {menuOpen ? <X size={24} /> : <Menu size={24} />}
+          </button>
+        </div>
 
-    <li className="nav-item">
-      <Link
-        className="nav-link active button"
-        onClick={() => {
-          handleLogout();
-          setMenuOpen(false);
-        }}
-      >
-        Logout
-      </Link>
-    </li>
-  </>
-)}
-
-
-          </ul>
+        {/* Mobile Navigation */}
+        <div className={`mobile-nav ${menuOpen ? 'mobile-nav-open' : ''}`}>
+          {!isLoggedIn ? (
+            <>
+              <Link to="/landing-page" className="mobile-nav-link" onClick={closeMenu}>
+                <Home size={18} />
+                Dashboard
+              </Link>
+              <Link to="/login" className="mobile-nav-link" onClick={closeMenu}>
+                <User size={18} />
+                Login
+              </Link>
+              <Link to="/signup" className="mobile-nav-link" onClick={closeMenu}>
+                Get Started
+              </Link>
+            </>
+          ) : (
+            <>
+              <Link to="/landing-page" className="mobile-nav-link" onClick={closeMenu}>
+                <Home size={18} />
+                Dashboard
+              </Link>
+              <Link to="/detailsTable" className="mobile-nav-link" onClick={closeMenu}>
+                <BarChart3 size={18} />
+                Portfolio
+              </Link>
+              <Link to="/track-trade" className="mobile-nav-link" onClick={closeMenu}>
+                <Camera size={18} />
+                Track Trade
+              </Link>
+              <Link to="/calculator" className="mobile-nav-link" onClick={closeMenu}>
+                <Calculator size={18} />
+                Calculator
+              </Link>
+              <Link to="/article" className="mobile-nav-link" onClick={closeMenu}>
+                <FileText size={18} />
+                Articles
+              </Link>
+              
+              <div className="mobile-user-section">
+                <div className="mobile-user-info">
+                  <User size={18} />
+                  <span>{userEmail}</span>
+                </div>
+                <button onClick={handleLogout} className="mobile-nav-link logout-link">
+                  <LogOut size={18} />
+                  Logout
+                </button>
+              </div>
+            </>
+          )}
         </div>
       </div>
     </nav>

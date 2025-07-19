@@ -2,6 +2,21 @@ import React, { useState } from 'react';
 import {
   LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer
 } from 'recharts';
+import { 
+  Upload, 
+  Camera, 
+  FileImage, 
+  TrendingUp, 
+  TrendingDown, 
+  Calendar,
+  DollarSign,
+  BarChart3,
+  Download,
+  Eye,
+  AlertCircle,
+  CheckCircle,
+  Clock
+} from 'lucide-react';
 
 function TrackTrade() {
   const [screenshots, setScreenshots] = useState([]);
@@ -28,7 +43,8 @@ function TrackTrade() {
 
   // Handle file input change
   const handleFilesChange = (e) => {
-    setScreenshots(e.target.files);
+    const files = Array.from(e.target.files);
+    setScreenshots(files);
     setPortfolio(null);
     setError(null);
     setStoreMessage(null);
@@ -234,9 +250,8 @@ function TrackTrade() {
         body: JSON.stringify({ email, from: fromDate, to: toDate }),
       });
       const data = await res.json();
-      console.log('Fetched trades:', data); // DEBUG: See what data backend returns
+      
       if (res.ok) {
-        // Defensive check for data shape
         if (Array.isArray(data)) {
           setAllTrades(data);
         } else if (Array.isArray(data.allTrades)) {
@@ -298,8 +313,6 @@ function TrackTrade() {
       }
 
       const data = await res.json();
-
-      // Compose a readable report with 5 topics & explanations
       const reportText = createReadableReport(data);
       setEvaluationReport(reportText);
       setShowEvalReport(true);
@@ -341,7 +354,7 @@ ${data.mostSuccessfulTrade
       : 'No data on the most successful trade available.'}
 
 5. Recommendations
-Based on this evaluation, consider reviewing the top losers to understand what went wrong and evaluate if adjustments can improve future returns. Continue to monitor your top gainers and the most successful trades to maximize your portfolio’s growth.
+Based on this evaluation, consider reviewing the top losers to understand what went wrong and evaluate if adjustments can improve future returns. Continue to monitor your top gainers and the most successful trades to maximize your portfolio's growth.
     `.trim();
   };
 
@@ -371,256 +384,422 @@ Based on this evaluation, consider reviewing the top losers to understand what w
   const stockNames = graphData ? Object.keys(graphData) : [];
 
   return (
-    <div style={{ maxWidth: 900, margin: 'auto', padding: 20 }}>
-      <h2>📷 Track Trade via Screenshot</h2>
-
-      <form onSubmit={handleSubmit}>
-        <input
-          type="file"
-          accept="image/*"
-          multiple
-          onChange={handleFilesChange}
-          className="form-control"
-        />
-        <button type="submit" disabled={loading} className="btn btn-primary" style={{ marginTop: 10 }}>
-          {loading ? 'Analyzing...' : 'Upload & Analyze'}
-        </button>
-      </form>
-
-      {error && <div style={{ marginTop: 20, color: 'red' }}><strong>Error:</strong> {error}</div>}
-
-      {storeMessage && (
-        <div
-          style={{
-            marginTop: 15,
-            color: storeMessage.startsWith('✅') ? 'green' : 'red',
-            fontWeight: 'bold',
-          }}
-        >
-          {storeMessage}
-        </div>
-      )}
-
-      {portfolio && (
-        <div style={{ marginTop: 30 }}>
-          <h3>📄 Extracted Portfolio Data</h3>
-          <table border="1" cellPadding="8" style={{ borderCollapse: 'collapse', width: '100%' }}>
-            <thead style={{ backgroundColor: '#f0f0f0' }}>
-              <tr>
-                <th>Stock Name</th>
-                <th>Invested Date</th>
-                <th>Invested Amount</th>
-                <th>Current Value</th>
-                <th>Profit or Loss</th>
-              </tr>
-            </thead>
-            <tbody>
-              {portfolio.map((item, idx) => (
-                <tr
-                  key={idx}
-                  style={{
-                    color:
-                      item['Profit or Loss']?.startsWith('+')
-                        ? 'green'
-                        : item['Profit or Loss']?.startsWith('-')
-                        ? 'red'
-                        : 'black',
-                  }}
-                >
-                  <td>{item['Stock Name'] || 'N/A'}</td>
-                  <td>
-                    <input
-                      type="date"
-                      value={item['Invested Date']}
-                      onChange={(e) => handleDateChange(idx, e.target.value)}
-                      disabled={confirmed}
-                      className="form-control"
-                    />
-                  </td>
-                  <td>
-                    <input
-                      type="number"
-                      value={item['Invested Amount']}
-                      onChange={(e) => handleAmountChange(idx, 'Invested Amount', e.target.value)}
-                      disabled={confirmed}
-                      className="form-control"
-                    />
-                  </td>
-                  <td>
-                    <input
-                      type="number"
-                      value={item['Current Value']}
-                      onChange={(e) => handleAmountChange(idx, 'Current Value', e.target.value)}
-                      disabled={confirmed}
-                      className="form-control"
-                    />
-                  </td>
-                  <td>{item['Profit or Loss'] || 'N/A'}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-
-          {!confirmed && (
-            <button className="btn btn-success" style={{ marginTop: 20 }} onClick={handleConfirm}>
-              ✅ Confirm & Save
-            </button>
-          )}
-        </div>
-      )}
-
-      <div style={{ marginTop: 40 }}>
-        <h4>📊 Fetch Portfolio Summary</h4>
-
-        {/* Quick Date Range Dropdown */}
-        <div className="row" style={{ gap: 10, alignItems: 'center', marginBottom: 10 }}>
-          <select
-            onChange={handleQuickRangeChange}
-            defaultValue=""
-            className="form-control"
-            style={{ width: '180px', marginRight: 10 }}
-          >
-            <option value="" disabled>
-              Select Quick Range
-            </option>
-            <option value="lastWeek">Last Week</option>
-            <option value="last15Days">Last 15 Days</option>
-            <option value="lastMonth">Last Month</option>
-            <option value="lastYear">Last Year</option>
-          </select>
-
-          <input
-            type="date"
-            value={fromDate}
-            onChange={(e) => setFromDate(e.target.value)}
-            className="form-control"
-            style={{ width: '150px' }}
-          />
-          <input
-            type="date"
-            value={toDate}
-            onChange={(e) => setToDate(e.target.value)}
-            className="form-control"
-            style={{ width: '150px' }}
-          />
-
-          <button className="btn btn-info" onClick={handleSummary}>
-            📈 Get Summary
-          </button>
-
-          <button className="btn btn-primary" onClick={handleFetchTrades} style={{ marginLeft: 10 }}>
-            📋 Show All Trades
-          </button>
-        </div>
-
-        {summary && (
-          <div style={{ marginTop: 20, fontWeight: 'bold' }}>
-            <div>Total Invested: ₹{summary.totalInvested}</div>
-            <div>Total Current Value: ₹{summary.totalCurrentValue}</div>
-            <div>Profit: ₹{summary.profit}</div>
-            <div>Return %: {summary.returnPercent}%</div>
+    <div className="track-trade-page">
+      <div className="container">
+        {/* Header */}
+        <div className="page-header">
+          <div className="header-content">
+            <div className="header-icon">
+              <Camera size={32} />
+            </div>
+            <div>
+              <h1 className="page-title">Track Trade via Screenshot</h1>
+              <p className="page-subtitle">Upload portfolio screenshots and get AI-powered analysis</p>
+            </div>
           </div>
-        )}
+        </div>
 
-        {error && <div style={{ color: 'red', marginTop: 10 }}>{error}</div>}
-
-        {/* Render all trades if available */}
-        {allTrades.length > 0 && (
-          <div style={{ marginTop: 30 }}>
-            <h4>All Trades</h4>
-            <table border="1" cellPadding="8" style={{ borderCollapse: 'collapse', width: '100%' }}>
-              <thead style={{ backgroundColor: '#eee' }}>
-                <tr>
-                  <th>Stock Name</th>
-                  <th>Invested Date</th>
-                  <th>Invested Amount</th>
-                  <th>Current Value</th>
-                  <th>Profit</th>
-                  <th>Return %</th>
-                </tr>
-              </thead>
-              <tbody>
-                {allTrades.map((trade, idx) => {
-                  // Defensive property names (try camelCase, else fallback keys)
-                  const stockName = trade.stockName || trade['Stock Name'] || 'N/A';
-                  const investedDate = trade.investedDate || trade['Invested Date'] || 'N/A';
-                  const investedAmount = trade.investedAmount || trade['Invested Amount'] || 'N/A';
-                  const currentValue = trade.currentValue || trade['Current Value'] || 'N/A';
-                  const profit = trade.profit || trade['Profit'] || trade['Profit or Loss'] || 'N/A';
-                  const returnPercent = trade.returnPercent || trade['Return %'] || 'N/A';
-
-                  const profitNumber = parseFloat(profit.toString().replace(/[^0-9.-]+/g, '')) || 0;
-
-                  return (
-                    <tr key={idx} style={{ color: profitNumber >= 0 ? 'green' : 'red' }}>
-                      <td>{stockName}</td>
-                      <td>{investedDate}</td>
-                      <td>{investedAmount}</td>
-                      <td>{currentValue}</td>
-                      <td>{profit}</td>
-                      <td>{returnPercent}</td>
-                    </tr>
-                  );
-                })}
-              </tbody>
-            </table>
-          </div>
-        )}
-
-        {/* Graph Section */}
-        {graphData && combinedData.length > 0 && (
-          <div style={{ marginTop: 40 }}>
-            <h4>Profit/Loss by Date per Stock</h4>
-            <ResponsiveContainer width="100%" height={300}>
-              <LineChart data={combinedData} margin={{ top: 10, right: 30, left: 20, bottom: 5 }}>
-                <CartesianGrid strokeDasharray="3 3" />
-                <XAxis dataKey="date" />
-                <YAxis />
-                <Tooltip />
-                <Legend />
-                {stockNames.map((stock, idx) => (
-                  <Line
-                    key={stock}
-                    type="monotone"
-                    dataKey={stock}
-                    stroke={lineColors[idx % lineColors.length]}
-                    strokeWidth={2}
-                    dot={false}
+        {/* Upload Section */}
+        <section className="upload-section">
+          <div className="card">
+            <div className="card-header">
+              <h2 className="section-title">
+                <Upload size={24} />
+                Upload Portfolio Screenshots
+              </h2>
+            </div>
+            <div className="card-body">
+              <form onSubmit={handleSubmit} className="upload-form">
+                <div className="file-upload-area">
+                  <input
+                    type="file"
+                    accept="image/*"
+                    multiple
+                    onChange={handleFilesChange}
+                    className="file-input"
+                    id="screenshot-upload"
                   />
-                ))}
-              </LineChart>
-            </ResponsiveContainer>
+                  <label htmlFor="screenshot-upload" className="file-upload-label">
+                    <FileImage size={48} />
+                    <div className="upload-text">
+                      <h3>Choose Screenshots</h3>
+                      <p>Select multiple images of your portfolio</p>
+                    </div>
+                  </label>
+                </div>
+                
+                {screenshots.length > 0 && (
+                  <div className="selected-files">
+                    <h4>Selected Files ({screenshots.length})</h4>
+                    <div className="file-list">
+                      {screenshots.map((file, index) => (
+                        <div key={index} className="file-item">
+                          <FileImage size={16} />
+                          <span>{file.name}</span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                <button 
+                  type="submit" 
+                  disabled={loading || screenshots.length === 0} 
+                  className="btn btn-primary btn-lg"
+                >
+                  {loading ? (
+                    <>
+                      <div className="spinner"></div>
+                      Analyzing Screenshots...
+                    </>
+                  ) : (
+                    <>
+                      <BarChart3 size={20} />
+                      Analyze Portfolio
+                    </>
+                  )}
+                </button>
+              </form>
+            </div>
+          </div>
+        </section>
+
+        {/* Error Display */}
+        {error && (
+          <div className="alert alert-danger">
+            <AlertCircle size={20} />
+            {error}
           </div>
         )}
-      </div>
 
-      <div style={{ marginTop: 50 }}>
-        <h4>🧠 AI Portfolio Evaluation Report</h4>
-        <button
-          onClick={fetchEvaluationReport}
-          disabled={evalLoading}
-          className="btn btn-warning"
-        >
-          {evalLoading ? 'Generating report...' : 'Get Evaluation Report'}
-        </button>
-
-        {evalError && <div style={{ color: 'red', marginTop: 10 }}>{evalError}</div>}
-
-        {showEvalReport && evaluationReport && (
-          <pre
-            style={{
-              whiteSpace: 'pre-wrap',
-              backgroundColor: '#f5f5f5',
-              padding: 15,
-              marginTop: 20,
-              borderRadius: 5,
-              maxHeight: 400,
-              overflowY: 'auto',
-            }}
-          >
-            {evaluationReport}
-          </pre>
+        {/* Store Message */}
+        {storeMessage && (
+          <div className={`alert ${storeMessage.startsWith('✅') ? 'alert-success' : 'alert-danger'}`}>
+            {storeMessage.startsWith('✅') ? <CheckCircle size={20} /> : <AlertCircle size={20} />}
+            {storeMessage}
+          </div>
         )}
+
+        {/* Portfolio Results */}
+        {portfolio && (
+          <section className="portfolio-results">
+            <div className="card">
+              <div className="card-header">
+                <h2 className="section-title">
+                  <BarChart3 size={24} />
+                  Extracted Portfolio Data
+                </h2>
+              </div>
+              <div className="card-body">
+                <div className="table-responsive">
+                  <table className="table">
+                    <thead>
+                      <tr>
+                        <th>Stock Name</th>
+                        <th>Invested Date</th>
+                        <th>Invested Amount</th>
+                        <th>Current Value</th>
+                        <th>Profit/Loss</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {portfolio.map((item, idx) => {
+                        const profitLoss = item['Profit or Loss'];
+                        const isProfit = profitLoss?.startsWith('+');
+                        const isLoss = profitLoss?.startsWith('-');
+                        
+                        return (
+                          <tr key={idx} className={isProfit ? 'profit-row' : isLoss ? 'loss-row' : ''}>
+                            <td className="stock-name">{item['Stock Name'] || 'N/A'}</td>
+                            <td>
+                              <input
+                                type="date"
+                                value={item['Invested Date']}
+                                onChange={(e) => handleDateChange(idx, e.target.value)}
+                                disabled={confirmed}
+                                className="form-control form-control-sm"
+                              />
+                            </td>
+                            <td>
+                              <div className="input-group">
+                                <span className="input-group-text">₹</span>
+                                <input
+                                  type="number"
+                                  value={item['Invested Amount']}
+                                  onChange={(e) => handleAmountChange(idx, 'Invested Amount', e.target.value)}
+                                  disabled={confirmed}
+                                  className="form-control form-control-sm"
+                                />
+                              </div>
+                            </td>
+                            <td>
+                              <div className="input-group">
+                                <span className="input-group-text">₹</span>
+                                <input
+                                  type="number"
+                                  value={item['Current Value']}
+                                  onChange={(e) => handleAmountChange(idx, 'Current Value', e.target.value)}
+                                  disabled={confirmed}
+                                  className="form-control form-control-sm"
+                                />
+                              </div>
+                            </td>
+                            <td>
+                              <span className={`profit-loss ${isProfit ? 'profit' : isLoss ? 'loss' : 'neutral'}`}>
+                                {isProfit && <TrendingUp size={16} />}
+                                {isLoss && <TrendingDown size={16} />}
+                                ₹{profitLoss || 'N/A'}
+                              </span>
+                            </td>
+                          </tr>
+                        );
+                      })}
+                    </tbody>
+                  </table>
+                </div>
+
+                {!confirmed && (
+                  <div className="card-footer">
+                    <button className="btn btn-success btn-lg" onClick={handleConfirm}>
+                      <CheckCircle size={20} />
+                      Confirm & Save Portfolio
+                    </button>
+                  </div>
+                )}
+              </div>
+            </div>
+          </section>
+        )}
+
+        {/* Portfolio Analysis Section */}
+        <section className="analysis-section">
+          <div className="card">
+            <div className="card-header">
+              <h2 className="section-title">
+                <BarChart3 size={24} />
+                Portfolio Analysis
+              </h2>
+            </div>
+            <div className="card-body">
+              {/* Date Range Selection */}
+              <div className="date-range-section">
+                <h4>Select Analysis Period</h4>
+                <div className="date-controls">
+                  <div className="quick-range">
+                    <label className="form-label">Quick Range</label>
+                    <select
+                      onChange={handleQuickRangeChange}
+                      defaultValue=""
+                      className="form-control"
+                    >
+                      <option value="" disabled>Select Quick Range</option>
+                      <option value="lastWeek">Last Week</option>
+                      <option value="last15Days">Last 15 Days</option>
+                      <option value="lastMonth">Last Month</option>
+                      <option value="lastYear">Last Year</option>
+                    </select>
+                  </div>
+
+                  <div className="custom-range">
+                    <div className="date-input-group">
+                      <label className="form-label">From Date</label>
+                      <input
+                        type="date"
+                        value={fromDate}
+                        onChange={(e) => setFromDate(e.target.value)}
+                        className="form-control"
+                      />
+                    </div>
+                    <div className="date-input-group">
+                      <label className="form-label">To Date</label>
+                      <input
+                        type="date"
+                        value={toDate}
+                        onChange={(e) => setToDate(e.target.value)}
+                        className="form-control"
+                      />
+                    </div>
+                  </div>
+                </div>
+
+                <div className="analysis-actions">
+                  <button className="btn btn-primary" onClick={handleSummary}>
+                    <BarChart3 size={20} />
+                    Get Summary
+                  </button>
+                  <button className="btn btn-outline" onClick={handleFetchTrades}>
+                    <Eye size={20} />
+                    Show All Trades
+                  </button>
+                  <button 
+                    className="btn btn-warning" 
+                    onClick={fetchEvaluationReport}
+                    disabled={evalLoading}
+                  >
+                    {evalLoading ? (
+                      <>
+                        <div className="spinner"></div>
+                        Generating...
+                      </>
+                    ) : (
+                      <>
+                        <BarChart3 size={20} />
+                        AI Evaluation
+                      </>
+                    )}
+                  </button>
+                </div>
+              </div>
+
+              {/* Summary Display */}
+              {summary && (
+                <div className="summary-section">
+                  <h4>Portfolio Summary</h4>
+                  <div className="summary-grid">
+                    <div className="metric-card">
+                      <div className="metric-icon">
+                        <DollarSign size={24} />
+                      </div>
+                      <div className="metric-content">
+                        <div className="metric-label">Total Invested</div>
+                        <div className="metric-value">{summary.totalInvested}</div>
+                      </div>
+                    </div>
+                    <div className="metric-card">
+                      <div className="metric-icon">
+                        <TrendingUp size={24} />
+                      </div>
+                      <div className="metric-content">
+                        <div className="metric-label">Current Value</div>
+                        <div className="metric-value">{summary.totalCurrentValue}</div>
+                      </div>
+                    </div>
+                    <div className="metric-card">
+                      <div className="metric-icon">
+                        <BarChart3 size={24} />
+                      </div>
+                      <div className="metric-content">
+                        <div className="metric-label">Profit/Loss</div>
+                        <div className={`metric-value ${summary.profit.startsWith('-') ? 'loss' : 'profit'}`}>
+                          {summary.profit}
+                        </div>
+                      </div>
+                    </div>
+                    <div className="metric-card">
+                      <div className="metric-icon">
+                        <TrendingUp size={24} />
+                      </div>
+                      <div className="metric-content">
+                        <div className="metric-label">Return %</div>
+                        <div className={`metric-value ${summary.returnPercentage.startsWith('-') ? 'loss' : 'profit'}`}>
+                          {summary.returnPercentage}
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {/* All Trades Table */}
+              {allTrades.length > 0 && (
+                <div className="trades-section">
+                  <h4>All Trades</h4>
+                  <div className="table-responsive">
+                    <table className="table">
+                      <thead>
+                        <tr>
+                          <th>Stock Name</th>
+                          <th>Invested Date</th>
+                          <th>Invested Amount</th>
+                          <th>Current Value</th>
+                          <th>Profit</th>
+                          <th>Return %</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {allTrades.map((trade, idx) => {
+                          const stockName = trade.stockName || trade['Stock Name'] || 'N/A';
+                          const investedDate = trade.investedDate || trade['Invested Date'] || 'N/A';
+                          const investedAmount = trade.investedAmount || trade['Invested Amount'] || 'N/A';
+                          const currentValue = trade.currentValue || trade['Current Value'] || 'N/A';
+                          const profit = trade.profit || trade['Profit'] || trade['Profit or Loss'] || 'N/A';
+                          const returnPercent = trade.returnPercent || trade['Return %'] || 'N/A';
+
+                          const profitNumber = parseFloat(profit.toString().replace(/[^0-9.-]+/g, '')) || 0;
+
+                          return (
+                            <tr key={idx} className={profitNumber >= 0 ? 'profit-row' : 'loss-row'}>
+                              <td className="stock-name">{stockName}</td>
+                              <td>{investedDate}</td>
+                              <td>{investedAmount}</td>
+                              <td>{currentValue}</td>
+                              <td>
+                                <span className={`profit-loss ${profitNumber >= 0 ? 'profit' : 'loss'}`}>
+                                  {profitNumber >= 0 ? <TrendingUp size={16} /> : <TrendingDown size={16} />}
+                                  {profit}
+                                </span>
+                              </td>
+                              <td>
+                                <span className={`profit-loss ${profitNumber >= 0 ? 'profit' : 'loss'}`}>
+                                  {returnPercent}
+                                </span>
+                              </td>
+                            </tr>
+                          );
+                        })}
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              )}
+
+              {/* Graph Section */}
+              {graphData && combinedData.length > 0 && (
+                <div className="chart-section">
+                  <h4>Profit/Loss Trends</h4>
+                  <div className="chart-container">
+                    <ResponsiveContainer width="100%" height={400}>
+                      <LineChart data={combinedData} margin={{ top: 10, right: 30, left: 20, bottom: 5 }}>
+                        <CartesianGrid strokeDasharray="3 3" />
+                        <XAxis dataKey="date" />
+                        <YAxis />
+                        <Tooltip />
+                        <Legend />
+                        {stockNames.map((stock, idx) => (
+                          <Line
+                            key={stock}
+                            type="monotone"
+                            dataKey={stock}
+                            stroke={lineColors[idx % lineColors.length]}
+                            strokeWidth={2}
+                            dot={false}
+                          />
+                        ))}
+                      </LineChart>
+                    </ResponsiveContainer>
+                  </div>
+                </div>
+              )}
+
+              {/* AI Evaluation Report */}
+              {evalError && (
+                <div className="alert alert-danger">
+                  <AlertCircle size={20} />
+                  {evalError}
+                </div>
+              )}
+
+              {showEvalReport && evaluationReport && (
+                <div className="evaluation-section">
+                  <h4>AI Portfolio Evaluation</h4>
+                  <div className="evaluation-report">
+                    <pre>{evaluationReport}</pre>
+                  </div>
+                </div>
+              )}
+            </div>
+          </div>
+        </section>
       </div>
     </div>
   );
