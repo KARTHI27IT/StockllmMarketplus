@@ -1,0 +1,150 @@
+.calc-container {
+  max-width: 700px;
+  margin: 0 auto;
+  padding: 20px;
+  font-family: sans-serif;
+}
+
+.calc-title {
+  font-size: 24px;
+  font-weight: bold;
+  margin-bottom: 20px;
+}
+
+.calc-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 15px;
+  margin-bottom: 30px;
+}
+
+.calc-grid input,
+.calc-grid select {
+  padding: 10px;
+  font-size: 16px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+}
+
+.calc-button {
+  background-color: #007bff;
+  color: white;
+  padding: 10px 20px;
+  font-size: 16px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  margin-top: 10px;
+}
+
+.calc-button:hover {
+  background-color: #0056b3;
+}
+
+.calc-result {
+  margin-top: 40px;
+}
+
+.calc-result p {
+  font-size: 16px;
+  margin: 5px 0;
+}
+.calc-container {
+  max-width: 900px;
+  margin: 20px auto;
+  padding: 20px;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  border: 1px solid #ddd;
+  border-radius: 10px;
+  background-color: #fafafa;
+}
+
+.calc-title {
+  text-align: center;
+  margin-bottom: 20px;
+  color: #333;
+}
+
+.calc-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 15px;
+  margin-bottom: 20px;
+}
+
+.calc-grid input,
+.calc-grid select {
+  padding: 10px 12px;
+  font-size: 1rem;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+  transition: border-color 0.3s;
+}
+
+.calc-grid input:focus,
+.calc-grid select:focus {
+  outline: none;
+  border-color: #0088fe;
+  box-shadow: 0 0 5px rgba(0, 136, 254, 0.4);
+}
+
+.calc-button {
+  display: block;
+  width: 100%;
+  max-width: 200px;
+  margin: 0 auto 30px auto;
+  padding: 10px 0;
+  font-size: 1.1rem;
+  background-color: #0088fe;
+  color: white;
+  border: none;
+  border-radius: 25px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.calc-button:hover {
+  background-color: #005fbb;
+}
+
+/* New styles for result and pie chart aligned to the right */
+.calc-result-wrapper {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 40px;
+  flex-wrap: wrap;
+  margin-top: 20px;
+}
+
+.calc-result {
+  background-color: white;
+  border: 1px solid #ddd;
+  padding: 20px 30px;
+  border-radius: 10px;
+  box-shadow: 0 2px 8px rgb(0 0 0 / 0.1);
+  min-width: 220px;
+  color: #222;
+}
+
+.calc-result h3 {
+  margin-bottom: 15px;
+  color: #0088fe;
+}
+
+.calc-result p {
+  font-size: 1.1rem;
+  margin: 8px 0;
+}
+
+/* Pie chart container */
+.pie-chart-container {
+  width: 320px;
+  height: 300px;
+  background-color: white;
+  border: 1px solid #ddd;
+  border-radius: 10px;
+  box-shadow: 0 2px 10px rgb(0 0 0 / 0.1);
+  padding: 10px;
+}
+

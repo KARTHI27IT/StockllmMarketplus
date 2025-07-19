@@ -1,0 +1,30 @@
+{
+  "name": "backend",
+  "version": "1.0.0",
+  "main": "server.js",
+  "scripts": {
+    "start": "node --dns-result-order=ipv4first server.js"
+  },
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "dependencies": {
+    "@google/generative-ai": "^0.24.1",
+    "axios": "^1.10.0",
+    "axios-cookiejar-support": "^6.0.3",
+    "cors": "^2.8.5",
+    "dotenv": "^16.6.1",
+    "express": "^5.1.0",
+    "fs": "^0.0.1-security",
+    "jsonwebtoken": "^9.0.2",
+    "mongoose": "^8.16.1",
+    "multer": "^2.0.1",
+    "path": "^0.12.7",
+    "pdfkit": "^0.17.1",
+    "puppeteer": "^24.11.2",
+    "tesseract.js": "^6.0.1",
+    "tesseract.js-node": "^0.1.0",
+    "tough-cookie": "^5.1.2",
+    "yahoo-finance2": "^2.13.3"
+  }
+}

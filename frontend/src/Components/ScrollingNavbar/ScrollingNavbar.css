@@ -1,0 +1,12 @@
+@keyframes scroll-left {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(-50%);
+  }
+}
+
+.scrolling-container:hover {
+  animation-play-state: paused !important;
+}
