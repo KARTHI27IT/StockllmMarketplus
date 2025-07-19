@@ -1,6 +1,5 @@
-import './Navbar.css';
-import { Link, useNavigate } from 'react-router-dom';
-import { useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { 
   TrendingUp, 
   User, 
@@ -11,14 +10,19 @@ import {
   Calculator, 
   FileText, 
   Camera,
-  Home
+  Home,
+  Bell,
+  Settings
 } from 'lucide-react';
+import './Navbar.css';
 
 const Navbar = () => {
   const navigate = useNavigate();
+  const location = useLocation();
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [userEmail, setUserEmail] = useState('');
   const [menuOpen, setMenuOpen] = useState(false);
+  const [showUserMenu, setShowUserMenu] = useState(false);
 
   useEffect(() => {
     const email = localStorage.getItem('userEmail');
@@ -36,6 +40,7 @@ const Navbar = () => {
     setIsLoggedIn(false);
     setUserEmail('');
     setMenuOpen(false);
+    setShowUserMenu(false);
     setTimeout(() => navigate('/landing-page'), 100);
   };
 
@@ -47,67 +52,116 @@ const Navbar = () => {
     setMenuOpen(false);
   };
 
+  const toggleUserMenu = () => {
+    setShowUserMenu(!showUserMenu);
+  };
+
+  const isActiveRoute = (path) => {
+    return location.pathname === path;
+  };
+
+  const navItems = [
+    { path: '/landing-page', label: 'Dashboard', icon: Home },
+    { path: '/detailsTable', label: 'Portfolio', icon: BarChart3, requireAuth: true },
+    { path: '/track-trade', label: 'Track Trade', icon: Camera, requireAuth: true },
+    { path: '/calculator', label: 'Calculator', icon: Calculator },
+    { path: '/article', label: 'Articles', icon: FileText, requireAuth: true },
+  ];
+
   return (
     <nav className="navbar">
       <div className="container">
         <div className="navbar-content">
           {/* Brand */}
           <Link to="/landing-page" className="navbar-brand" onClick={closeMenu}>
-            <TrendingUp size={24} />
-            <span>StockLLM</span>
+            <div className="brand-icon">
+              <TrendingUp size={28} />
+            </div>
+            <div className="brand-text">
+              <span className="brand-name">StockLLM</span>
+              <span className="brand-tagline">Smart Trading</span>
+            </div>
           </Link>
 
           {/* Desktop Navigation */}
           <div className="navbar-nav desktop-nav">
-            {!isLoggedIn ? (
-              <>
-                <Link to="/landing-page" className="nav-link">
-                  <Home size={18} />
-                  Dashboard
+            {navItems.map((item) => {
+              if (item.requireAuth && !isLoggedIn) return null;
+              const Icon = item.icon;
+              return (
+                <Link
+                  key={item.path}
+                  to={item.path}
+                  className={`nav-link ${isActiveRoute(item.path) ? 'active' : ''}`}
+                >
+                  <Icon size={18} />
+                  <span>{item.label}</span>
                 </Link>
-                <Link to="/login" className="nav-link">
-                  <User size={18} />
+              );
+            })}
+
+            {/* Auth Section */}
+            {!isLoggedIn ? (
+              <div className="auth-buttons">
+                <Link to="/login" className="btn btn-ghost btn-sm">
+                  <User size={16} />
                   Login
                 </Link>
-                <Link to="/signup" className="btn btn-primary">
+                <Link to="/signup" className="btn btn-primary btn-sm">
                   Get Started
                 </Link>
-              </>
+              </div>
             ) : (
-              <>
-                <Link to="/landing-page" className="nav-link">
-                  <Home size={18} />
-                  Dashboard
-                </Link>
-                <Link to="/detailsTable" className="nav-link">
-                  <BarChart3 size={18} />
-                  Portfolio
-                </Link>
-                <Link to="/track-trade" className="nav-link">
-                  <Camera size={18} />
-                  Track Trade
-                </Link>
-                <Link to="/calculator" className="nav-link">
-                  <Calculator size={18} />
-                  Calculator
-                </Link>
-                <Link to="/article" className="nav-link">
-                  <FileText size={18} />
-                  Articles
-                </Link>
+              <div className="user-section">
+                <button className="notification-btn">
+                  <Bell size={18} />
+                  <span className="notification-badge">3</span>
+                </button>
                 
-                {/* User Menu */}
-                <div className="user-menu">
-                  <div className="user-info">
-                    <User size={18} />
-                    <span className="user-email">{userEmail}</span>
-                  </div>
-                  <button onClick={handleLogout} className="btn btn-ghost btn-sm">
-                    <LogOut size={16} />
-                    Logout
+                <div className="user-menu-container">
+                  <button 
+                    className="user-menu-trigger"
+                    onClick={toggleUserMenu}
+                  >
+                    <div className="user-avatar">
+                      <User size={16} />
+                    </div>
+                    <div className="user-info">
+                      <span className="user-name">
+                        {userEmail.split('@')[0]}
+                      </span>
+                      <span className="user-email">{userEmail}</span>
+                    </div>
                   </button>
+
+                  {showUserMenu && (
+                    <div className="user-dropdown">
+                      <div className="dropdown-header">
+                        <div className="user-avatar large">
+                          <User size={20} />
+                        </div>
+                        <div>
+                          <div className="dropdown-name">{userEmail.split('@')[0]}</div>
+                          <div className="dropdown-email">{userEmail}</div>
+                        </div>
+                      </div>
+                      
+                      <div className="dropdown-divider"></div>
+                      
+                      <div className="dropdown-menu">
+                        <button className="dropdown-item">
+                          <Settings size={16} />
+                          Settings
+                        </button>
+                        <button className="dropdown-item" onClick={handleLogout}>
+                          <LogOut size={16} />
+                          Logout
+                        </button>
+                      </div>
+                    </div>
+                  )}
                 </div>
-              </>
+              </div>
             )}
           </div>
 
@@ -123,57 +177,64 @@ const Navbar = () => {
 
         {/* Mobile Navigation */}
         <div className={`mobile-nav ${menuOpen ? 'mobile-nav-open' : ''}`}>
-          {!isLoggedIn ? (
-            <>
-              <Link to="/landing-page" className="mobile-nav-link" onClick={closeMenu}>
-                <Home size={18} />
-                Dashboard
-              </Link>
-              <Link to="/login" className="mobile-nav-link" onClick={closeMenu}>
-                <User size={18} />
-                Login
-              </Link>
-              <Link to="/signup" className="mobile-nav-link" onClick={closeMenu}>
-                Get Started
-              </Link>
-            </>
-          ) : (
-            <>
-              <Link to="/landing-page" className="mobile-nav-link" onClick={closeMenu}>
-                <Home size={18} />
-                Dashboard
-              </Link>
-              <Link to="/detailsTable" className="mobile-nav-link" onClick={closeMenu}>
-                <BarChart3 size={18} />
-                Portfolio
-              </Link>
-              <Link to="/track-trade" className="mobile-nav-link" onClick={closeMenu}>
-                <Camera size={18} />
-                Track Trade
-              </Link>
-              <Link to="/calculator" className="mobile-nav-link" onClick={closeMenu}>
-                <Calculator size={18} />
-                Calculator
-              </Link>
-              <Link to="/article" className="mobile-nav-link" onClick={closeMenu}>
-                <FileText size={18} />
-                Articles
-              </Link>
-              
+          <div className="mobile-nav-content">
+            {navItems.map((item) => {
+              if (item.requireAuth && !isLoggedIn) return null;
+              const Icon = item.icon;
+              return (
+                <Link
+                  key={item.path}
+                  to={item.path}
+                  className={`mobile-nav-link ${isActiveRoute(item.path) ? 'active' : ''}`}
+                  onClick={closeMenu}
+                >
+                  <Icon size={20} />
+                  <span>{item.label}</span>
+                </Link>
+              );
+            })}
+
+            {!isLoggedIn ? (
+              <div className="mobile-auth-section">
+                <Link to="/login" className="mobile-nav-link" onClick={closeMenu}>
+                  <User size={20} />
+                  Login
+                </Link>
+                <Link to="/signup" className="btn btn-primary w-full" onClick={closeMenu}>
+                  Get Started
+                </Link>
+              </div>
+            ) : (
               <div className="mobile-user-section">
                 <div className="mobile-user-info">
-                  <User size={18} />
-                  <span>{userEmail}</span>
+                  <div className="user-avatar">
+                    <User size={20} />
+                  </div>
+                  <div>
+                    <div className="mobile-user-name">{userEmail.split('@')[0]}</div>
+                    <div className="mobile-user-email">{userEmail}</div>
+                  </div>
                 </div>
-                <button onClick={handleLogout} className="mobile-nav-link logout-link">
-                  <LogOut size={18} />
-                  Logout
-                </button>
+                
+                <div className="mobile-user-actions">
+                  <button className="mobile-nav-link">
+                    <Settings size={20} />
+                    Settings
+                  </button>
+                  <button className="mobile-nav-link logout-link" onClick={handleLogout}>
+                    <LogOut size={20} />
+                    Logout
+                  </button>
+                </div>
               </div>
-            </>
-          )}
+            )}
+          </div>
         </div>
       </div>
+
+      {/* Overlay for mobile menu */}
+      {menuOpen && <div className="mobile-nav-overlay" onClick={closeMenu}></div>}
+      {showUserMenu && <div className="user-menu-overlay" onClick={() => setShowUserMenu(false)}></div>}
     </nav>
   );
 };
