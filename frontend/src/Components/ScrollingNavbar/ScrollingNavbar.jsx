@@ -20,51 +20,37 @@ const ScrollingNavbar = ({
   const duplicated = [...niftyTopCompanies, ...niftyTopCompanies];
 
   return (
-    <nav className="bg-dark bg-opacity-75 border-bottom border-secondary py-2 px-3 sticky-top overflow-hidden">
-      <div
-        ref={scrollRef}
-        className="d-flex scrolling-content gap-2"
-        style={{
-          whiteSpace: 'nowrap',
-          animation: `scroll-left ${animationDuration}s linear infinite`,
-        }}
-      >
-        {duplicated.map((company, idx) => {
-          const positive = company.changePercent >= 0;
-          const bgClass = positive ? 'bg-success bg-opacity-25 text-success' : 'bg-danger bg-opacity-25 text-danger';
-          return (
-            <button
-              key={`${company.symbol}-${idx}`}
-              onClick={() => handleCompanyClick(company.symbol)}
-              className={`d-flex flex-column align-items-center px-3 py-1 rounded btn-sm ${bgClass} border-0`}
-              style={{ minWidth: '110px' }}
-            >
-              <span className="fw-semibold small">{company.symbol.toUpperCase()}</span>
-              <span className="text-muted small">₹{company.price?.toFixed(2)}</span>
-              <span className="d-flex align-items-center small">
-                {positive ? <ArrowUp size={12} className="me-1" /> : <ArrowDown size={12} className="me-1" />}
-                {company.changePercent?.toFixed(2)}%
-              </span>
-            </button>
-          );
-        })}
+    <div className="scrolling-navbar">
+      <div className="scrolling-container">
+        <div
+          ref={scrollRef}
+          className="scrolling-content"
+          style={{
+            animation: `scroll-left ${animationDuration}s linear infinite`,
+          }}
+        >
+          {duplicated.map((company, idx) => {
+            const positive = company.changePercent >= 0;
+            const statusClass = positive ? 'positive' : 'negative';
+            
+            return (
+              <button
+                key={`${company.symbol}-${idx}`}
+                onClick={() => handleCompanyClick(company.symbol)}
+                className={`company-ticker ${statusClass}`}
+              >
+                <div className="ticker-symbol">{company.symbol.toUpperCase()}</div>
+                <div className="ticker-price">₹{company.price?.toFixed(2)}</div>
+                <div className="ticker-change">
+                  {positive ? <ArrowUp size={12} /> : <ArrowDown size={12} />}
+                  <span>{Math.abs(company.changePercent)?.toFixed(2)}%</span>
+                </div>
+              </button>
+            );
+          })}
+        </div>
       </div>
-
-      <style>{`
-        @keyframes scroll-left {
-          0% {
-            transform: translateX(0);
-          }
-          100% {
-            transform: translateX(-50%);
-          }
-        }
-        .scrolling-content:hover {
-          animation-play-state: paused !important;
-          cursor: pointer;
-        }
-      `}</style>
-    </nav>
+    </div>
   );
 };
 

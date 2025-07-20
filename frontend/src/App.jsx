@@ -9,7 +9,6 @@ import Table from './Components/Table/Table';
 import StockDetails from './Components/StockDetails/StockDetails';
 import LandingPage from './Components/LandingPage/LandingPage';
 import IndividualStockDetail from './Components/LandingPage/IndividualStockDetail';
-import 'bootstrap/dist/css/bootstrap.min.css';
 import Articles from './Components/Articles/Articles';
 import TrackTrade from './Components/TrackTrade/TrackTrade';
 

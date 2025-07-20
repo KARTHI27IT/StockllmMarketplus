@@ -1,36 +1,7 @@
 import React, { useState, useEffect } from 'react'; 
 import axios from 'axios';
-
-const modalStyles = {
-  overlay: {
-    position: 'fixed',
-    top: 0, left: 0,
-    width: '100vw', height: '100vh',
-    backgroundColor: 'rgba(0,0,0,0.5)',
-    display: 'flex',
-    justifyContent: 'center',
-    alignItems: 'center',
-    zIndex: 1000,
-  },
-  modal: {
-    backgroundColor: 'white',
-    borderRadius: '10px',
-    padding: '2rem',
-    width: '90%',
-    maxWidth: '500px',
-    boxShadow: '0 4px 12px rgba(0,0,0,0.3)',
-    position: 'relative',
-  },
-  closeBtn: {
-    position: 'absolute',
-    top: '0.5rem',
-    right: '1rem',
-    background: 'none',
-    border: 'none',
-    fontSize: '1.5rem',
-    cursor: 'pointer',
-  }
-};
+import { PenTool, X, User, Calendar, FileText, Plus, Eye, EyeOff } from 'lucide-react';
+import './Articles.css';
 
 const Articles = () => {
   const [articles, setArticles] = useState([]);
@@ -41,13 +12,20 @@ const Articles = () => {
     section: '',
   });
   const [expandedIndex, setExpandedIndex] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
   const fetchArticles = async () => {
     try {
+      setLoading(true);
       const res = await axios.get('http://localhost:5000/articles');
       setArticles(res.data);
+      setError(null);
     } catch (err) {
       console.error('Failed to fetch articles', err);
+      setError('Failed to load articles. Please try again.');
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -62,6 +40,10 @@ const Articles = () => {
     } else {
       document.body.style.overflow = '';
     }
+    
+    return () => {
+      document.body.style.overflow = '';
+    };
   }, [showForm]);
 
   const handleInputChange = (e) => {
@@ -79,6 +61,7 @@ const Articles = () => {
         setShowForm(false);
       } catch (err) {
         console.error('Failed to post article', err);
+        setError('Failed to create article. Please try again.');
       }
     }
   };
@@ -92,147 +75,216 @@ const Articles = () => {
     if (e.target === e.currentTarget) setShowForm(false);
   };
 
-  return (
-    <div style={{ padding: '2rem', fontFamily: 'Arial, sans-serif' }}>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-        <h1>Articles</h1>
-        <button
-          onClick={() => setShowForm(true)}
-          style={{
-            padding: '0.5rem 1rem',
-            backgroundColor: '#4CAF50',
-            color: 'white',
-            border: 'none',
-            borderRadius: '5px',
-            cursor: 'pointer',
-          }}
-        >
-          Write Your First Article
-        </button>
-      </div>
+  const formatDate = (dateString) => {
+    return new Date(dateString).toLocaleDateString('en-US', {
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric'
+    });
+  };
 
-      {articles.length === 0 ? (
-        <p>No articles created yet.</p>
-      ) : (
-        <div
-          style={{
-            display: 'grid',
-            gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))',
-            gap: '1.5rem',
-            marginTop: '2rem',
-          }}
-        >
-          {articles.map((article, index) => {
-            const isExpanded = expandedIndex === index;
-            const sectionLines = article.section.split('\n');
-            const previewSection = sectionLines.slice(0, 5).join('\n');
-            const displaySection = isExpanded ? article.section : previewSection;
-
-            return (
-              <div
-                key={article._id}
-                onClick={() => toggleExpand(index)}
-                style={{
-                  border: '1px solid #ccc',
-                  borderRadius: '10px',
-                  padding: '1rem',
-                  boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)',
-                  cursor: 'pointer',
-                  whiteSpace: 'pre-wrap',
-                }}
-              >
-                <h3 style={{ color: '#333' }}>{article.title}</h3>
-                <p style={{ fontStyle: 'italic', color: '#555' }}>by {article.author}</p>
-                <p style={{ color: '#444' }}>
-                  {displaySection}
-                  {!isExpanded && sectionLines.length > 5 && (
-                    <span style={{ color: '#2196F3' }}>... (click to read more)</span>
-                  )}
-                </p>
-              </div>
-            );
-          })}
-        </div>
-      )}
-
-      {showForm && (
-        <div style={modalStyles.overlay} onClick={handleOverlayClick}>
-          <div style={modalStyles.modal}>
-            <button
-              onClick={() => setShowForm(false)}
-              style={modalStyles.closeBtn}
-              aria-label="Close modal"
-            >
-              &times;
-            </button>
-            <h2 style={{ marginBottom: '1rem' }}>Write Your Article</h2>
-            <form onSubmit={handleFormSubmit}>
-              <div style={{ marginBottom: '1rem' }}>
-                <label>Author Name: </label><br />
-                <input
-                  type="text"
-                  name="author"
-                  value={formData.author}
-                  onChange={handleInputChange}
-                  required
-                  style={{ width: '100%', padding: '0.5rem' }}
-                />
-              </div>
-              <div style={{ marginBottom: '1rem' }}>
-                <label>Article Title: </label><br />
-                <input
-                  type="text"
-                  name="title"
-                  value={formData.title}
-                  onChange={handleInputChange}
-                  required
-                  style={{ width: '100%', padding: '0.5rem' }}
-                />
-              </div>
-              <div style={{ marginBottom: '1rem' }}>
-                <label>Article Section (Use multiple lines): </label><br />
-                <textarea
-                  name="section"
-                  value={formData.section}
-                  onChange={handleInputChange}
-                  required
-                  rows={6}
-                  style={{ width: '100%', padding: '0.5rem' }}
-                />
-              </div>
-              <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '1rem' }}>
-                <button
-                  type="button"
-                  onClick={() => setShowForm(false)}
-                  style={{
-                    backgroundColor: '#ccc',
-                    color: '#333',
-                    padding: '0.5rem 1rem',
-                    border: 'none',
-                    borderRadius: '5px',
-                    cursor: 'pointer',
-                  }}
-                >
-                  Cancel
-                </button>
-                <button
-                  type="submit"
-                  style={{
-                    backgroundColor: '#2196F3',
-                    color: 'white',
-                    padding: '0.5rem 1rem',
-                    border: 'none',
-                    borderRadius: '5px',
-                    cursor: 'pointer',
-                  }}
-                >
-                  Submit Article
-                </button>
-              </div>
-            </form>
+  if (loading) {
+    return (
+      <div className="articles-page">
+        <div className="container">
+          <div className="loading-container">
+            <div className="spinner"></div>
+            <p>Loading articles...</p>
           </div>
         </div>
-      )}
+      </div>
+    );
+  }
+
+  return (
+    <div className="articles-page">
+      <div className="container">
+        {/* Header */}
+        <div className="articles-header">
+          <div className="header-content">
+            <div className="header-icon">
+              <FileText size={32} />
+            </div>
+            <div>
+              <h1 className="page-title">Market Articles</h1>
+              <p className="page-subtitle">Share insights and read expert analysis on market trends</p>
+            </div>
+          </div>
+          <button
+            onClick={() => setShowForm(true)}
+            className="btn btn-primary btn-lg"
+          >
+            <Plus size={20} />
+            Write Article
+          </button>
+        </div>
+
+        {/* Error Display */}
+        {error && (
+          <div className="alert alert-danger">
+            {error}
+          </div>
+        )}
+
+        {/* Articles Grid */}
+        <div className="articles-content">
+          {articles.length === 0 ? (
+            <div className="empty-state">
+              <div className="empty-icon">
+                <FileText size={64} />
+              </div>
+              <h3>No Articles Yet</h3>
+              <p>Be the first to share your market insights and analysis.</p>
+              <button
+                onClick={() => setShowForm(true)}
+                className="btn btn-primary"
+              >
+                <Plus size={20} />
+                Write First Article
+              </button>
+            </div>
+          ) : (
+            <div className="articles-grid">
+              {articles.map((article, index) => {
+                const isExpanded = expandedIndex === index;
+                const sectionLines = article.section.split('\n');
+                const previewSection = sectionLines.slice(0, 3).join('\n');
+                const displaySection = isExpanded ? article.section : previewSection;
+                const hasMore = sectionLines.length > 3;
+
+                return (
+                  <article key={article._id} className="article-card">
+                    <div className="article-header">
+                      <h3 className="article-title">{article.title}</h3>
+                      <div className="article-meta">
+                        <div className="author-info">
+                          <User size={16} />
+                          <span>{article.author}</span>
+                        </div>
+                        <div className="date-info">
+                          <Calendar size={16} />
+                          <span>{formatDate(article.createdAt)}</span>
+                        </div>
+                      </div>
+                    </div>
+                    
+                    <div className="article-content">
+                      <p className="article-text">{displaySection}</p>
+                      
+                      {hasMore && (
+                        <button
+                          onClick={() => toggleExpand(index)}
+                          className="expand-btn"
+                        >
+                          {isExpanded ? (
+                            <>
+                              <EyeOff size={16} />
+                              Show Less
+                            </>
+                          ) : (
+                            <>
+                              <Eye size={16} />
+                              Read More
+                            </>
+                          )}
+                        </button>
+                      )}
+                    </div>
+                  </article>
+                );
+              })}
+            </div>
+          )}
+        </div>
+
+        {/* Article Form Modal */}
+        {showForm && (
+          <div className="modal-overlay" onClick={handleOverlayClick}>
+            <div className="modal-content">
+              <div className="modal-header">
+                <div className="modal-title">
+                  <PenTool size={24} />
+                  <h2>Write New Article</h2>
+                </div>
+                <button
+                  onClick={() => setShowForm(false)}
+                  className="modal-close"
+                  aria-label="Close modal"
+                >
+                  <X size={24} />
+                </button>
+              </div>
+              
+              <form onSubmit={handleFormSubmit} className="article-form">
+                <div className="form-group">
+                  <label className="form-label">
+                    <User size={16} />
+                    Author Name
+                  </label>
+                  <input
+                    type="text"
+                    name="author"
+                    value={formData.author}
+                    onChange={handleInputChange}
+                    required
+                    className="form-control"
+                    placeholder="Enter your name"
+                  />
+                </div>
+                
+                <div className="form-group">
+                  <label className="form-label">
+                    <FileText size={16} />
+                    Article Title
+                  </label>
+                  <input
+                    type="text"
+                    name="title"
+                    value={formData.title}
+                    onChange={handleInputChange}
+                    required
+                    className="form-control"
+                    placeholder="Enter article title"
+                  />
+                </div>
+                
+                <div className="form-group">
+                  <label className="form-label">
+                    <PenTool size={16} />
+                    Article Content
+                  </label>
+                  <textarea
+                    name="section"
+                    value={formData.section}
+                    onChange={handleInputChange}
+                    required
+                    rows={8}
+                    className="form-control"
+                    placeholder="Write your article content here..."
+                  />
+                </div>
+                
+                <div className="form-actions">
+                  <button
+                    type="button"
+                    onClick={() => setShowForm(false)}
+                    className="btn btn-secondary"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    type="submit"
+                    className="btn btn-primary"
+                  >
+                    <PenTool size={16} />
+                    Publish Article
+                  </button>
+                </div>
+              </form>
+            </div>
+          </div>
+        )}
+      </div>
     </div>
   );
 };

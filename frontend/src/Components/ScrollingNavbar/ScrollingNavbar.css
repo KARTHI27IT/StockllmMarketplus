@@ -1,3 +1,111 @@
+/* Professional Scrolling Navbar Styles */
+.scrolling-navbar {
+  background: linear-gradient(135deg, var(--gray-900) 0%, var(--gray-800) 100%);
+  border-bottom: 1px solid var(--gray-700);
+  padding: var(--space-3) 0;
+  position: sticky;
+  top: 73px; /* Adjust based on main navbar height */
+  z-index: 90;
+  overflow: hidden;
+}
+
+.scrolling-container {
+  width: 100%;
+  overflow: hidden;
+  position: relative;
+}
+
+.scrolling-content {
+  display: flex;
+  gap: var(--space-4);
+  white-space: nowrap;
+  will-change: transform;
+}
+
+.scrolling-content:hover {
+  animation-play-state: paused !important;
+}
+
+.company-ticker {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-width: 120px;
+  padding: var(--space-3) var(--space-4);
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: var(--radius-lg);
+  cursor: pointer;
+  transition: all 0.3s ease;
+  backdrop-filter: blur(10px);
+  color: white;
+  font-family: var(--font-mono);
+}
+
+.company-ticker:hover {
+  background: rgba(255, 255, 255, 0.1);
+  border-color: rgba(255, 255, 255, 0.2);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+.company-ticker.positive {
+  border-color: var(--success-400);
+  background: rgba(34, 197, 94, 0.1);
+}
+
+.company-ticker.positive:hover {
+  background: rgba(34, 197, 94, 0.2);
+  border-color: var(--success-300);
+}
+
+.company-ticker.negative {
+  border-color: var(--danger-400);
+  background: rgba(239, 68, 68, 0.1);
+}
+
+.company-ticker.negative:hover {
+  background: rgba(239, 68, 68, 0.2);
+  border-color: var(--danger-300);
+}
+
+.ticker-symbol {
+  font-size: 0.875rem;
+  font-weight: 700;
+  color: white;
+  margin-bottom: var(--space-1);
+  letter-spacing: 0.05em;
+}
+
+.ticker-price {
+  font-size: 0.75rem;
+  color: var(--gray-300);
+  margin-bottom: var(--space-1);
+  font-weight: 500;
+}
+
+.ticker-change {
+  display: flex;
+  align-items: center;
+  gap: var(--space-1);
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
+.company-ticker.positive .ticker-change {
+  color: var(--success-400);
+}
+
+.company-ticker.negative .ticker-change {
+  color: var(--danger-400);
+}
+
+.ticker-change svg {
+  flex-shrink: 0;
+}
+
+/* Scrolling Animation */
 @keyframes scroll-left {
   0% {
     transform: translateX(0);
@@ -7,6 +115,92 @@
   }
 }
 
-.scrolling-container:hover {
-  animation-play-state: paused !important;
+/* Responsive Design */
+@media (max-width: 768px) {
+  .scrolling-navbar {
+    padding: var(--space-2) 0;
+    top: 65px; /* Adjust for mobile navbar height */
+  }
+  
+  .company-ticker {
+    min-width: 100px;
+    padding: var(--space-2) var(--space-3);
+  }
+  
+  .ticker-symbol {
+    font-size: 0.75rem;
+  }
+  
+  .ticker-price,
+  .ticker-change {
+    font-size: 0.625rem;
+  }
+  
+  .scrolling-content {
+    gap: var(--space-3);
+  }
+}
+
+@media (max-width: 640px) {
+  .company-ticker {
+    min-width: 90px;
+    padding: var(--space-2);
+  }
+  
+  .ticker-symbol {
+    font-size: 0.625rem;
+  }
+  
+  .ticker-price,
+  .ticker-change {
+    font-size: 0.5rem;
+  }
+  
+  .scrolling-content {
+    gap: var(--space-2);
+  }
+}
+
+/* Focus states for accessibility */
+.company-ticker:focus {
+  outline: 2px solid var(--primary-400);
+  outline-offset: 2px;
+}
+
+/* High contrast mode support */
+@media (prefers-contrast: high) {
+  .company-ticker {
+    border-width: 2px;
+    background: rgba(255, 255, 255, 0.1);
+  }
+  
+  .company-ticker.positive {
+    background: rgba(34, 197, 94, 0.2);
+  }
+  
+  .company-ticker.negative {
+    background: rgba(239, 68, 68, 0.2);
+  }
+}
+
+/* Reduced motion support */
+@media (prefers-reduced-motion: reduce) {
+  .scrolling-content {
+    animation: none !important;
+  }
+  
+  .company-ticker {
+    transition: none;
+  }
+  
+  .company-ticker:hover {
+    transform: none;
+  }
+}
+
+/* Print styles */
+@media print {
+  .scrolling-navbar {
+    display: none;
+  }
 }
