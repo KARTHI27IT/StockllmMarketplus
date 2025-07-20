@@ -1,6 +1,17 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import { 
+  Plus, 
+  Download, 
+  Eye, 
+  Upload, 
+  FileText, 
+  BarChart3,
+  X,
+  Camera
+} from 'lucide-react';
+import './Table.css';
 
 function ReportDashboard() {
   const [reports, setReports] = useState([]);
@@ -85,112 +96,202 @@ function ReportDashboard() {
     }
   };
 
+  // Close modal if clicking outside content
+  const handleOverlayClick = (e) => {
+    if (e.target === e.currentTarget) setShowModal(false);
+  };
+
   return (
-    <div className="container mt-5">
-      <h2 className="mb-4 text-center">📊 Your Reports</h2>
+    <div className="reports-page">
+      <div className="container">
+        {/* Header */}
+        <div className="reports-header">
+          <div className="header-content">
+            <div className="header-icon">
+              <BarChart3 size={32} />
+            </div>
+            <div>
+              <h1 className="page-title">Your Reports</h1>
+              <p className="page-subtitle">Manage and view your investment analysis reports</p>
+            </div>
+          </div>
+          <button 
+            className="btn btn-primary btn-lg"
+            onClick={handleAddStocks}
+          >
+            <Plus size={20} />
+            Add New Report
+          </button>
+        </div>
 
-      {/* Add Stocks Button */}
-      <div className="text-end mb-3">
-        <button className="btn btn-primary" onClick={handleAddStocks}>
-          ➕ Add Stocks
-        </button>
-      </div>
-
-      {loading ? (
-        <p className="text-center mt-5">Loading reports...</p>
-      ) : reports.length === 0 ? (
-        <p className="text-center">No reports found.</p>
-      ) : (
-        <div className="table-responsive">
-          <table className="table table-bordered table-hover">
-            <thead className="table-dark">
-              <tr>
-                <th>S.no</th>
-                <th>Report Name</th>
-                <th>Download PDF</th>
-                <th>More Details</th>
-              </tr>
-            </thead>
-            <tbody>
+        {/* Reports Content */}
+        <div className="reports-content">
+          {loading ? (
+            <div className="loading-container">
+              <div className="spinner"></div>
+              <p>Loading reports...</p>
+            </div>
+          ) : reports.length === 0 ? (
+            <div className="empty-state">
+              <div className="empty-icon">
+                <FileText size={64} />
+              </div>
+              <h3>No Reports Yet</h3>
+              <p>Create your first investment analysis report by uploading portfolio screenshots.</p>
+              <button 
+                className="btn btn-primary"
+                onClick={handleAddStocks}
+              >
+                <Plus size={20} />
+                Create First Report
+              </button>
+            </div>
+          ) : (
+            <div className="reports-grid">
               {reports.map((report, index) => (
-                <tr key={index}>
-                  <td>{index + 1}</td>
-                  <td>{report.reportName}</td>
-                  <td>
+                <div key={index} className="report-card">
+                  <div className="report-header">
+                    <div className="report-icon">
+                      <FileText size={24} />
+                    </div>
+                    <div className="report-number">#{index + 1}</div>
+                  </div>
+                  
+                  <div className="report-content">
+                    <h3 className="report-title">{report.reportName}</h3>
+                    <p className="report-date">
+                      Created on {new Date(report.createdAt || Date.now()).toLocaleDateString()}
+                    </p>
+                  </div>
+                  
+                  <div className="report-actions">
                     <button
-                      className="btn btn-sm btn-success"
+                      className="btn btn-outline btn-sm"
                       onClick={() => handleDownload(report.reportPdf)}
+                      title="Download PDF"
                     >
-                      Download PDF
+                      <Download size={16} />
+                      Download
                     </button>
-                  </td>
-                  <td>
                     <button
-                      className="btn btn-sm btn-info"
+                      className="btn btn-primary btn-sm"
                       onClick={() => handleViewDetails(report._id)}
+                      title="View Details"
                     >
+                      <Eye size={16} />
                       View Details
                     </button>
-                  </td>
-                </tr>
+                  </div>
+                </div>
               ))}
-            </tbody>
-          </table>
+            </div>
+          )}
         </div>
-      )}
 
-      {/* Bootstrap Modal */}
-      {showModal && (
-        <div className="modal show d-block" tabIndex="-1" role="dialog">
-          <div className="modal-dialog" role="document">
+        {/* Modal */}
+        {showModal && (
+          <div className="modal-overlay" onClick={handleOverlayClick}>
             <div className="modal-content">
               <div className="modal-header">
-                <h5 className="modal-title">Add New Stock</h5>
+                <div className="modal-title">
+                  <Camera size={24} />
+                  <h2>Create New Report</h2>
+                </div>
                 <button
-                  type="button"
-                  className="btn-close"
                   onClick={handleCloseModal}
-                ></button>
+                  className="modal-close"
+                  aria-label="Close modal"
+                >
+                  <X size={24} />
+                </button>
               </div>
-              <div className="modal-body">
-                <form onSubmit={handleSubmit}>
-                  <div className="mb-3">
-                    <label htmlFor="goal" className="form-label">Goal</label>
-                    <input
-                      className="form-control"
-                      id="goal"
-                      value={goal}
-                      onChange={(e) => setGoal(e.target.value)}
-                      placeholder="e.g. Long-term growth, retirement planning..."
-                    />
-                  </div>
+              
+              <form onSubmit={handleSubmit} className="report-form">
+                <div className="form-group">
+                  <label className="form-label">
+                    <FileText size={16} />
+                    Investment Goal
+                  </label>
+                  <input
+                    type="text"
+                    className="form-control"
+                    value={goal}
+                    onChange={(e) => setGoal(e.target.value)}
+                    placeholder="e.g., Long-term growth, retirement planning..."
+                    required
+                  />
+                </div>
 
-                  <div className="mb-3">
-                    <label htmlFor="formFile" className="form-label">Stock Screenshot(s)</label>
+                <div className="form-group">
+                  <label className="form-label">
+                    <Upload size={16} />
+                    Portfolio Screenshots
+                  </label>
+                  <div className="file-upload-area">
                     <input
-                      className="form-control"
                       type="file"
-                      id="formFile"
                       accept="image/*"
                       multiple
                       onChange={(e) => setFiles(Array.from(e.target.files))}
+                      className="file-input"
+                      id="file-upload"
+                      required
                     />
+                    <label htmlFor="file-upload" className="file-upload-label">
+                      <Upload size={32} />
+                      <div className="upload-text">
+                        <h4>Choose Screenshots</h4>
+                        <p>Select multiple images of your portfolio</p>
+                      </div>
+                    </label>
                   </div>
-
-                  <button className="btn btn-primary" type="submit" disabled={loading}>
-                    {loading ? '⏳ Generating...' : '🚀 Generate Report'}
+                  
+                  {files.length > 0 && (
+                    <div className="selected-files">
+                      <h4>Selected Files ({files.length})</h4>
+                      <div className="file-list">
+                        {files.map((file, index) => (
+                          <div key={index} className="file-item">
+                            <Camera size={16} />
+                            <span>{file.name}</span>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                </div>
+                
+                <div className="form-actions">
+                  <button
+                    type="button"
+                    onClick={handleCloseModal}
+                    className="btn btn-secondary"
+                  >
+                    Cancel
                   </button>
-                </form>
-              </div>
-              <div className="modal-footer">
-                <button type="button" className="btn btn-secondary" onClick={handleCloseModal}>
-                  Close
-                </button>
-              </div>
+                  <button
+                    type="submit"
+                    className="btn btn-primary"
+                    disabled={loading}
+                  >
+                    {loading ? (
+                      <>
+                        <div className="spinner"></div>
+                        Generating...
+                      </>
+                    ) : (
+                      <>
+                        <BarChart3 size={16} />
+                        Generate Report
+                      </>
+                    )}
+                  </button>
+                </div>
+              </form>
             </div>
           </div>
-        </div>
-      )}
+        )}
+      </div>
     </div>
   );
 }

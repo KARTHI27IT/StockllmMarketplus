@@ -3,8 +3,8 @@ import { useNavigate } from 'react-router-dom';
 import './LandingPage.css';
 import {
   Search, TrendingUp, TrendingDown, BarChart3, Calculator,
-  PenTool, Briefcase, Activity, ArrowUp, ArrowDown, Minus,
-  Star, Shield, Zap, Target, Users, Award
+  PenTool, Activity, ArrowUp, ArrowDown, Minus,
+  Star, Shield, Zap, Users, Award, Camera, FileText
 } from 'lucide-react';
 import ScrollingNavbar from '../ScrollingNavbar/ScrollingNavbar';
 
@@ -107,8 +107,8 @@ const LandingPage = () => {
         const res = await fetch('http://localhost:5000/api/top-movers');
         if (!res.ok) throw new Error('Failed to fetch top movers');
         const data = await res.json();
-        setTopGainers(data.topGainers);
-        setTopLosers(data.topLosers);
+        setTopGainers(data.topGainers || []);
+        setTopLosers(data.topLosers || []);
       } catch (err) {
         console.error('❌ Failed to fetch top movers:', err);
       }
@@ -203,9 +203,13 @@ const LandingPage = () => {
 
   if (loading) {
     return (
-      <div className="loading-container">
-        <div className="spinner"></div>
-        <p>Loading market data...</p>
+      <div className="landing-page">
+        <div className="container">
+          <div className="loading-container">
+            <div className="spinner"></div>
+            <p>Loading market data...</p>
+          </div>
+        </div>
       </div>
     );
   }
